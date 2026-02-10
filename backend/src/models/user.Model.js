@@ -3,7 +3,13 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs"
 
 const userSchema = new mongoose.Schema({
-    name: {
+    firstName: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+
+    lastName: {
         type: String,
         required: true,
         trim: true,
@@ -52,7 +58,8 @@ const userSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true,
-    }
+    },
+
 }, 
 { timestamps: true }
 );

@@ -10,7 +10,15 @@ const register = async (req, res) => {
             console.log('Validation failed: missing fields');
             return res
             .status(400)
-            .json({ message: "Please provide all required fields."})
+            .json({ success:false, message: "Please provide all required fields."})
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailRegex.test(email)){
+            return res 
+            .status(400)
+            .json({ success: false, message: "Invalid email format." })
         }
 
         const userExists = await User.findOne({
