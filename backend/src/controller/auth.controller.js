@@ -4,9 +4,9 @@ import generateToken from "../utils/generateToken.js";
 const register = async (req, res) => {
     try {
         console.log('Register request received:', req.body);
-        const { name, userName, email, password } = req.body
+        const { firstName, lastName, userName, email, password } = req.body
 
-        if(!name || !userName || !email || !password) {
+        if(!firstName || !lastName || !userName || !email || !password) {
             console.log('Validation failed: missing fields');
             return res
             .status(400)
@@ -33,7 +33,8 @@ const register = async (req, res) => {
         }
 
         const user = await User.create({
-            name,
+            firstName,
+            lastName,
             userName,
             email,
             password,

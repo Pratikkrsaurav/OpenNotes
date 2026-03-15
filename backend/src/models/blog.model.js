@@ -89,6 +89,12 @@ const blogSchema = new mongoose.Schema({
         default: "draft",
     },
 
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+
     publishedAt: {
         type: Date,
     },

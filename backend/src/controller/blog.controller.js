@@ -1,5 +1,4 @@
 import Blog from "../models/blog.model.js";
-import blog from "../models/blog.model.js";
 import generateUniqueSlug from "../utils/generateUniqueSlug.js";
 
 const createBlog = async (req, res) => {
@@ -38,7 +37,7 @@ const createBlog = async (req, res) => {
 const getAllBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find({ status: "published" })
-        .populate("author", "fisrtName lastName username") // Populate author details (firstName, lastName, username)
+        .populate("author", "firstName lastName username") // Populate author details (firstName, lastName, username)
         .sort({ createdAt: -1 }); // Sort by newest first
 
         res
@@ -93,9 +92,10 @@ const updateBlog = async (req, res) => {
         }
 
         if (req.body.title && req.body.title !== blog.title) {
-      blog.slug = await generateUniqueSlug(req.body.title);
-      blog.title = req.body.title;
-    }
+  blog.slug = await generateUniqueSlug(req.body.title, blog._id);
+  blog.title = req.body.title;
+}
+
 
       if (req.body.content) blog.content = req.body.content;
     if (req.body.excerpt) blog.excerpt = req.body.excerpt;
