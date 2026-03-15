@@ -1,5 +1,4 @@
 import Hero from '../components/Hero'
-import { Button } from '../components/ui/button'
 import React from 'react'
 
 
