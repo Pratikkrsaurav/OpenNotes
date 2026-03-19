@@ -93,7 +93,7 @@ const deleteComment = async (req, res) => {
         .json({ success:false, message: "Error while deleting comment", error: error.message })
     }
 
-    export {
+    export  {
     addComment,
     getCommentByBlog,
     deleteComment

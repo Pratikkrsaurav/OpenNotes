@@ -8,15 +8,19 @@ import {
 } from "../components/ui/card";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import axios from "axios";
 import { toast } from "sonner";
+import { setLoading } from "../redux/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const {loading} = useSelector(store => store.auth) 
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -35,6 +39,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      dispatch(setLoading(true))
       const res = await axios.post(`http://localhost:3001/api/v1/users/register`, user, {
         headers: {
           "Content-Type": "application/json",
@@ -51,6 +56,8 @@ const Signup = () => {
       console.log(error);
       const message = error?.response?.data?.message || "Registration failed";
       toast.error(message);
+    } finally{
+      dispatch(setLoading(false))
     }
   };
 
@@ -145,7 +152,12 @@ const Signup = () => {
                 </button>
               </div>
               <Button type="submit" className="w-full">
-                Sign Up
+                {
+                loading ? (<>
+                <Loader2 className='mr-2 w-4 h-4 animate-spin' />
+                Signning Up...
+                </>) : ("Sign Up")
+}
               </Button>
               <p className="text-center text-gray-600 dark:text-gray-300">
                 Already have an account?{" "}

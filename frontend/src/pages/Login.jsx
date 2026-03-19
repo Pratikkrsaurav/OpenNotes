@@ -3,15 +3,19 @@ import auth from '../assets/auth.jpg'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Label } from '../components/ui/label'
 import { Input } from '../components/ui/input'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader, Loader2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import axios from 'axios'
 import { toast } from 'sonner'
+import { useDispatch, useSelector } from 'react-redux'
+import { setLoading, setUser } from '../redux/authSlice'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const {loading} = useSelector(store => store.auth) 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [input, setInput] = useState({
     email: "",
     password: "",
@@ -30,6 +34,7 @@ const Login = () => {
     console.log(input);
 
     try {
+      dispatch(setLoading(true))
       const res = await axios.post(
         `http://localhost:3001/api/v1/users/login`,
         input,
@@ -43,12 +48,16 @@ const Login = () => {
 
       if (res.status === 200) {
         console.log("Login successful", res.data);
+        dispatch(setUser(res.data.user))
         navigate("/")
         toast.success(res.data.message || "login successful");
       }
     } catch (error) {
       console.log(error?.response?.data?.message || "Login failed");
+    } finally{
+      dispatch(setLoading(false))
     }
+
   }
   return (
     <div className='flex min-h-screen md:pt-14'>
@@ -76,7 +85,12 @@ const Login = () => {
                   {showPassword ? <EyeOff size={20}/> : <Eye size={20} />}
                 </button>
               </div>
-              <Button type="submit" className="w-full">Login</Button>
+              <Button type="submit" className="w-full">{
+                loading ? (<>
+                <Loader2 className='mr-2 w-4 h-4 animate-spin' />
+                loading...
+                </>) : ("Login")
+}</Button>
               <p className='text-center text-gray-600 dark:text-gray-300'>Don't have an account? <Link to={'/signup'}><span className='underline cursor-pointer hover:text-gray-800 dark:hover:text-gray-100'>Sign Up</span></Link></p>
             </form>
           </CardContent>

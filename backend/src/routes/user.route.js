@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login } from "../controller/auth.controller.js";
+import { register, login, logout } from "../controller/auth.controller.js";
 import protect from "../middlewares/auth.middleware.js";
 import authorize from "../middlewares/authorize.middleware.js";
 
@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post("/register", register)
 router.post("/login", login)
+router.post("/logout", logout)
 router.get('/me', protect, (req, res) => {
     res.status(200).json({
          message: "user authenticated succesfully", 

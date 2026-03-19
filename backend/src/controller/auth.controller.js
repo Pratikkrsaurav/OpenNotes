@@ -91,15 +91,26 @@ const login = async (req,res ) => {
         console.log('Token generated');
         return res
         .status(200)
-        .json({ message: "Login successful", token })
+        .json({ message: "Login successful", token , user})
     } catch (error) {
         console.error('Login error:', error);
         return res.status(500).json({ message: "Server Error" })
     }
 }
 
+const logout = async (req,res) => {
+    try {
+        // If you were using cookies for auth, clear cookie here
+        // res.clearCookie("token");
+        return res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+        console.error("Logout error:", error);
+        return res.status(500).json({ message: "Server Error" });
+    }
+};
 
 export { register,
-            login
+            login,
+            logout
 
  };

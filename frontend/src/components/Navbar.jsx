@@ -1,14 +1,51 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { Input } from "./ui/input";
 import { Search } from "lucide-react";
 import { Button } from "./ui/button";
-import { FaMoon } from "react-icons/fa6";
+import { FaMoon, FaSun } from "react-icons/fa6";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "sonner";
+import { toggleTheme } from "../redux/themeSlice";
+import { clearUser } from "../redux/authSlice";
 
 const Navbar = () => {
-  const user = false;
+  const { user } = useSelector((store) => store.auth);
+  const { theme } = useSelector((store) => store.theme);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+
+  const handleThemeToggle = () => {
+    dispatch(toggleTheme());
+  };
+
+  const logoutHandler = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3001/api/v1/users/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.status === 200) {
+        toast.success(res.data.message || "Logout successful");
+        dispatch(clearUser());
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Logout failed");
+    }
+  }
 
   return (
     <div className="py-2 fixed w-full dark:bg-gray-800 dark:border-b-gray-600 border-b-gray-300 border-2 bg-white z-50">
@@ -27,37 +64,56 @@ const Navbar = () => {
           </Link>
           <div className="relative hidden md:block ">
             <Input
-            type="text"
-            placeholder="Search..."
-            className="border border-gray-700 dark:bg-gray-900 bg-gray-300 w-75 hidden md:block"
+              type="text"
+              placeholder="Search..."
+              className="border border-gray-700 dark:bg-gray-900 bg-gray-300 w-75 hidden md:block"
             />
-            <Button className="absolute right-0 top-0"><Search /></Button>
+            <Button className="absolute right-0 top-0">
+              <Search />
+            </Button>
           </div>
         </div>
         {/* nav section */}
         <nav className="flex md:gap-7 gap-4 items-center">
           <ul className="hidden md:flex gap-7 items-center text-xl font-semibold">
-            <Link to={'/'}><li>Home</li></Link>
-            <Link to={'/blogs'}><li>Blogs</li></Link>
-            <Link to={'/about'}><li>About</li></Link>
+            <Link to={"/"}>
+              <li>Home</li>
+            </Link>
+            <Link to={"/blogs"}>
+              <li>Blogs</li>
+            </Link>
+            <Link to={"/about"}>
+              <li>About</li>
+            </Link>
           </ul>
           <div className="flex">
-            <Button><FaMoon /></Button>
-            {
-              user ? <div>
-
-              </div> : <div className="ml-7 md:flex gap-2 ">
-                <Link to={"/login"}><Button>Login</Button></Link>
-                <Link className="hidden md:block" to={"/signup"}><Button>Signup</Button></Link>
-
-
+            <Button onClick={handleThemeToggle}>
+              {theme === "light" ? <FaMoon /> : <FaSun />}
+            </Button>
+            {user ? (
+              <div className="ml-7 flex gap-3 items-center">
+                <Avatar>
+                  {user.avatar ? (
+                    <AvatarImage src={user.avatar} alt={`${user.firstName} ${user.lastName}`} />
+                  ) : (
+                    <AvatarFallback>{`${user.firstName?.[0] || "U"}${user.lastName?.[0] || ""}`}</AvatarFallback>
+                  )}
+                </Avatar>
+                  <Button onClick={logoutHandler}>Logout</Button>
+                
               </div>
-            }
-
+            ) : (
+              <div className="ml-7 md:flex gap-2 ">
+                <Link to={"/login"}>
+                  <Button>Login</Button>
+                </Link>
+                <Link className="hidden md:block" to={"/signup"}>
+                  <Button>Signup</Button>
+                </Link>
+              </div>
+            )}
           </div>
         </nav>
-
-
       </div>
 
       {/* <Link to='/'>Home</Link> | <Link to='/blogs'>Blogs</Link> |{' '}
